@@ -1,0 +1,20 @@
+export type {{name}}ListItem = {
+  {{#columns}}
+  {{dataIndex}}: {{type}};
+  {{/columns}}
+};
+
+export type {{name}}ListPagination = {
+  total: number;
+  pageSize: number;
+  current: number;
+};
+
+export type {{name}}ListParams = {
+  status?: string;
+  key?: number;
+  pageSize?: number;
+  currentPage?: number;
+  filter?: Record<string, any[]>;
+  sorter?: Record<string, any>;
+};

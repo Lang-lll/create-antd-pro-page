@@ -1,0 +1,112 @@
+import { PlusOutlined } from '@ant-design/icons';
+import type { ActionType, ProColumns } from '@ant-design/pro-components';
+import {
+  PageContainer,
+  {{#if customTableComponentPath}}
+  {{^}}
+  ProTable,
+  {{/if}}
+} from '@ant-design/pro-components';
+import { Button } from 'antd';
+{{#if customTableComponentPath}}
+import ProTable from '{{customTableComponentPath}}';
+{{/if}}
+import {{name}}EditModalForm from './{{name}}EditModalForm';
+import React, { useRef, useState, useEffect } from 'react';
+import type { {{name}}ListItem, {{name}}ListPagination } from './data';
+import { get{{name}}List, remove{{name}} } from './service';
+{{#if tabList}}
+import { STATUS_MAP, STATUS_TAB_LIST } from './constants';
+{{/if}}
+
+const {{name}}List: React.FC = () => {
+  /** 新建窗口的弹窗 */
+  const [editModalState, setEditModalState] = useState<{ open: boolean, data?: {{name}}ListItem }>({ open: false });
+  {{#if tabList}}
+  const [listParams, setListParams] = useState<{ status: string | undefined }>({ status: STATUS_MAP.CREATED });
+  {{/if}}
+  const actionRef = useRef<ActionType>();
+
+  const columns: ProColumns<{{name}}ListItem>[] = [
+    {{#columns}}
+    {
+      title: '{{title}}',
+      dataIndex: '{{dataIndex}}'
+    },
+    {{/columns}}
+    {
+      title: '操作',
+      dataIndex: 'option',
+      valueType: 'option',
+      render: (_, record) => [
+        <a onClick={() => { openEditModal(record); }}>编辑</a>,
+        <a onClick={handleRemove}>删除</a>
+      ],
+    },
+  ];
+
+  function openEditModal(data?: {{name}}ListItem) {
+    setEditModalState({ open: true, data })
+  }
+
+  function closeEditModalOpen() {
+    setEditModalState({ ...editModalState, open: false })
+  }
+
+  function afterFormUpdate() {
+    setEditModalState({ ...editModalState, open: false })
+    actionRef.current?.reload()
+  }
+
+  async function handleRemove(selectedRows: {{name}}ListItem[]) {
+    const flag = await remove{{name}}(selectedRows)
+
+    if (flag) {
+      actionRef.current?.reload()
+    }
+  }
+
+  return (
+    <PageContainer
+      header=\{{ breadcrumb: {} }}
+      {{#if tabList}}
+      tabProps=\{{ defaultActiveKey: STATUS_MAP.CREATED }}
+      tabList={STATUS_TAB_LIST}
+      onTabChange={key => {
+        setListParams({ status: key === 'all' ? undefined : key })
+      }}
+      {{/if}}
+    >
+      <ProTable<{{name}}ListItem, {{name}}ListPagination>
+        actionRef={actionRef}
+        {{#if tabList}}
+        params={listParams as any}
+        {{/if}}
+        showHeader={false}
+        rowKey="{{rowKey}}"
+        toolBarRender={() => [
+          <Button
+            type="primary"
+            onClick={() => {
+              setEditModalState({ open: true  });
+            }}
+          >
+            <PlusOutlined /> 新建
+          </Button>,
+        ]}
+        options=\{{ fullScreen: false, reload: true, density: true, setting: false }}
+        request={get{{name}}List}
+        columns={columns}
+      />
+
+      <{{name}}EditModalForm
+        open={editModalState.open}
+        data={editModalState.data}
+        onCancel={closeEditModalOpen}
+        onUpdated={afterFormUpdate}
+      />
+    </PageContainer>
+  );
+};
+
+export default {{name}}List;

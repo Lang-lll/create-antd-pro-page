@@ -1,0 +1,55 @@
+import { useEffect, useRef } from 'react'
+import {
+  ModalForm,
+  ProFormText
+} from '@ant-design/pro-components';
+import { add{{name}}, update{{name}} } from './service';
+import type { ProFormInstance } from '@ant-design/pro-components'
+import type { {{name}}ListItem } from './data';
+
+export default function {{name}}EditModalForm(props: { open?: boolean, data?: {{name}}ListItem, onCancel?: () => void, onUpdated?: () => void }) {
+  const { open, data, onCancel, onUpdated } = props
+  const formRef = useRef<ProFormInstance>()
+
+  useEffect(() => {
+    if (open) {
+      formRef.current?.resetFields()
+
+      if (data && data.id) {
+        formRef.current?.setFieldsValue(data)
+      }
+    }
+  }, [open])
+
+  return (
+    <ModalForm
+      formRef={formRef}
+      title={`${data && data.{{rowKey}} ? '编辑' : '新增'}{{nameTitle}}`}
+      width="400px"
+      open={open}
+      modalProps=\{{ onCancel }}
+      onFinish={async (vals) => {
+        const newData = data ? {
+          ...data,
+          ...vals
+        } : vals
+
+        const success = data && data.id ? await update{{name}}(newData as {{name}}ListItem) : await add{{name}}(newData as {{name}}ListItem);
+
+        if (success && typeof success === 'object' && success.code === 200) {
+          typeof onUpdated === 'function' && onUpdated();
+        }
+      }}
+    >
+      {{#columns}}
+      <ProFormText
+        rules={[{ required: true }]}
+        width="md"
+        label="{{title}}"
+        name="{{dataIndex}}"
+      />
+
+      {{/columns}}
+    </ModalForm>
+  )
+}

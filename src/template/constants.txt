@@ -1,0 +1,16 @@
+export const STATUS_MAP = {
+  CREATED: 0
+};
+
+export const STATUS_TEXT_MAP: { [key: number | string]: string } = {
+  [STATUS_MAP.CREATED]: '正常'
+};
+
+export const STATUS_TAB_LIST: Array<{ key: string | number, tab: string }> = [
+  { key: STATUS_MAP.CREATED, tab: STATUS_TEXT_MAP[STATUS_MAP.CREATED] }
+];
+
+export const STATUS_FULL_TAB_LIST: Array<{ key: string | number, tab: string }> = [
+  { key: STATUS_MAP.CREATED, tab: STATUS_TEXT_MAP[STATUS_MAP.CREATED] },
+  { key: 'all', tab: '全部' }
+];

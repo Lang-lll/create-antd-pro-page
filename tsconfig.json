@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "module": "NodeNext",
+    "target": "ES2020",
+    "jsx": "react",
+    "esModuleInterop": true,
+    "noEmit": true,
+    "composite": true,
+    "allowImportingTsExtensions": true
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "ts-node": {
+    "esm": true
+  }
+}

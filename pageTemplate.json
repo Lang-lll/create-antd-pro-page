@@ -1,0 +1,10 @@
+{
+  "name": "Category",
+  "nameTitle": "分类",
+  "apiName": "categoryBean",
+  "customTableComponentPath": "@/components/antd/ProTable",
+  "columns": [
+    { "dataIndex": "name", "title": "名称", "type": "string" },
+    { "dataIndex": "status", "title": "状态", "type": "string" }
+  ]
+}
