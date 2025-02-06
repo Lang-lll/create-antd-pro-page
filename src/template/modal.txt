@@ -44,9 +44,9 @@ export default function {{name}}EditModalForm(props: { open?: boolean, data?: {{
       {{#columns}}
       <ProFormText
         rules={[{ required: true }]}
-        width="md"
-        label="{{title}}"
         name="{{dataIndex}}"
+        label="{{title}}"
+        width="md"
       />
 
       {{/columns}}

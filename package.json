@@ -1,11 +1,12 @@
 {
   "name": "create-antd-pro-page",
   "version": "0.0.1",
-  "description": "快捷创建antd-pro组件的页面",
+  "description": "快捷创建基于antd-pro组件的页面",
   "private": false,
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
+    "debug": "node --no-warnings=ExperimentalWarning --loader ts-node/esm src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

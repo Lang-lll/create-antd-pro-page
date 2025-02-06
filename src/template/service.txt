@@ -59,9 +59,9 @@ export async function add{{name}}(data: { [key: string]: any }, options?: { [key
 }
 
 /** 删除 */
-export async function remove{{name}}(rows: {{name}}ListItem[], options?: { [key: string]: any }) {
-  return request<Record<string, any>>('/{{apiName}}', {
-    data: rows.map((row) => row.key),
+export async function remove{{name}}(row: {{name}}ListItem, options?: { [key: string]: any }) {
+  return request<Record<string, any>>('/{{apiName}}/delete', {
+    data: row,
     method: 'DELETE',
     ...(options || {}),
   });

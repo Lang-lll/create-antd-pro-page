@@ -7,23 +7,23 @@ import {
   ProTable,
   {{/if}}
 } from '@ant-design/pro-components';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 {{#if customTableComponentPath}}
 import ProTable from '{{customTableComponentPath}}';
 {{/if}}
-import {{name}}EditModalForm from './{{name}}EditModalForm';
-import React, { useRef, useState, useEffect } from 'react';
-import type { {{name}}ListItem, {{name}}ListPagination } from './data';
+import {{name}}{{> globalEditFormSuffix }} from './{{name}}{{> globalEditFormSuffix }}';
+import React, { useRef, useState } from 'react';
 import { get{{name}}List, remove{{name}} } from './service';
-{{#if tabList}}
+{{#if tabs}}
 import { STATUS_MAP, STATUS_TAB_LIST } from './constants';
 {{/if}}
+import type { {{name}}ListItem, {{name}}ListPagination } from './data';
 
-const {{name}}List: React.FC = () => {
+const {{name}}Page: React.FC = () => {
   /** 新建窗口的弹窗 */
   const [editModalState, setEditModalState] = useState<{ open: boolean, data?: {{name}}ListItem }>({ open: false });
-  {{#if tabList}}
-  const [listParams, setListParams] = useState<{ status: string | undefined }>({ status: STATUS_MAP.CREATED });
+  {{#if tabs}}
+  const [listParams, setListParams] = useState<{ status: number | undefined }>({ status: STATUS_MAP.{{tabs.[0].key}} });
   {{/if}}
   const actionRef = useRef<ActionType>();
 
@@ -39,8 +39,8 @@ const {{name}}List: React.FC = () => {
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => [
-        <a onClick={() => { openEditModal(record); }}>编辑</a>,
-        <a onClick={handleRemove}>删除</a>
+        <a key="edit" onClick={() => openEditModal(record)}>编辑</a>,
+        <a key="delete" onClick={confirmRemove(record)}>删除</a>
       ],
     },
   ];
@@ -58,8 +58,21 @@ const {{name}}List: React.FC = () => {
     actionRef.current?.reload()
   }
 
-  async function handleRemove(selectedRows: {{name}}ListItem[]) {
-    const flag = await remove{{name}}(selectedRows)
+  function confirmRemove(row: {{name}}ListItem) {
+    return () => {
+      Modal.confirm({
+        title: '删除',
+        content: `确定删除？`,
+        icon: null,
+        onOk: () => {
+          handleRemove(row)
+        },
+      })
+    }
+  }
+
+  async function handleRemove(row: {{name}}ListItem) {
+    const flag = await remove{{name}}(row)
 
     if (flag) {
       actionRef.current?.reload()
@@ -69,23 +82,23 @@ const {{name}}List: React.FC = () => {
   return (
     <PageContainer
       header=\{{ breadcrumb: {} }}
-      {{#if tabList}}
-      tabProps=\{{ defaultActiveKey: STATUS_MAP.CREATED }}
+      {{#if tabs}}
+      tabProps=\{{ defaultActiveKey: `${ STATUS_MAP.{{tabs.[0].key}} }` }}
       tabList={STATUS_TAB_LIST}
       onTabChange={key => {
-        setListParams({ status: key === 'all' ? undefined : key })
+        setListParams({ status: key === 'all' ? undefined : parseInt(key) })
       }}
       {{/if}}
     >
       <ProTable<{{name}}ListItem, {{name}}ListPagination>
         actionRef={actionRef}
-        {{#if tabList}}
+        {{#if tabs}}
         params={listParams as any}
         {{/if}}
-        showHeader={false}
         rowKey="{{rowKey}}"
         toolBarRender={() => [
           <Button
+            key="add"
             type="primary"
             onClick={() => {
               setEditModalState({ open: true  });
@@ -99,7 +112,7 @@ const {{name}}List: React.FC = () => {
         columns={columns}
       />
 
-      <{{name}}EditModalForm
+      <{{name}}{{> globalEditFormSuffix }}
         open={editModalState.open}
         data={editModalState.data}
         onCancel={closeEditModalOpen}
@@ -109,4 +122,4 @@ const {{name}}List: React.FC = () => {
   );
 };
 
-export default {{name}}List;
+export default {{name}}Page;

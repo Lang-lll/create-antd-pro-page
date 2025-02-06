@@ -1,13 +1,13 @@
 import { useEffect, useRef } from 'react'
 import {
-  ModalForm,
+  DrawerForm,
   ProFormText
 } from '@ant-design/pro-components';
-import { addCategory, updateCategory } from './service';
+import { add{{name}}, update{{name}} } from './service';
 import type { ProFormInstance } from '@ant-design/pro-components'
-import type { CategoryListItem } from './data';
+import type { {{name}}ListItem } from './data';
 
-export default function CategoryEditModalForm(props: { open?: boolean, data?: CategoryListItem, onCancel?: () => void, onUpdated?: () => void }) {
+export default function {{name}}EditDrawerForm(props: { open?: boolean, data?: {{name}}ListItem, onCancel?: () => void, onUpdated?: () => void }) {
   const { open, data, onCancel, onUpdated } = props
   const formRef = useRef<ProFormInstance>()
 
@@ -22,39 +22,36 @@ export default function CategoryEditModalForm(props: { open?: boolean, data?: Ca
   }, [open])
 
   return (
-    <ModalForm
+    <DrawerForm
       formRef={formRef}
-      title={`${data && data.id ? '编辑' : '新增'}分类`}
-      width="400px"
+      title={`${data && data.{{rowKey}} ? '编辑' : '新增'}{{nameTitle}}`}
+      width="900px"
       open={open}
-      modalProps={{ onCancel }}
+      grid
+      drawerProps=\{{ maskClosable: false, onClose: onCancel }}
       onFinish={async (vals) => {
         const newData = data ? {
           ...data,
           ...vals
         } : vals
 
-        const success = data && data.id ? await updateCategory(newData as CategoryListItem) : await addCategory(newData as CategoryListItem);
+        const success = data && data.id ? await update{{name}}(newData as {{name}}ListItem) : await add{{name}}(newData as {{name}}ListItem);
 
         if (success && typeof success === 'object' && success.code === 200) {
           typeof onUpdated === 'function' && onUpdated();
         }
       }}
     >
+      {{#columns}}
       <ProFormText
         rules={[{ required: true }]}
+        name="{{dataIndex}}"
+        label="{{title}}"
         width="md"
-        label="名称"
-        name="name"
+        colProps=\{{ span: 12 }}
       />
 
-      <ProFormText
-        rules={[{ required: true }]}
-        width="md"
-        label="状态"
-        name="status"
-      />
-
-    </ModalForm>
+      {{/columns}}
+    </DrawerForm>
   )
 }

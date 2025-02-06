@@ -1,0 +1,149 @@
+import type { Request, Response } from 'express';
+import type { {{name}}ListItem, {{name}}ListParams } from './data.d';
+
+const getDefaultList = (current: number, pageSize: number) => {
+  const tableListDataSource: {{name}}ListItem[] = [];
+
+  for (let i = 0; i < pageSize; i += 1) {
+    const index = (current - 1) * 10 + i + 1;
+    tableListDataSource.push({
+      {{#columns}}
+      {{#ifEquals ../rowKey dataIndex}}
+      {{dataIndex}}: index,
+      {{^}}
+      {{dataIndex}}: {{#ifEquals type 'string'}}`{{dataIndex}}-${index}`{{^}}1{{/ifEquals}},
+      {{/ifEquals}}
+      {{/columns}}
+    })
+  }
+  return tableListDataSource;
+};
+
+let tableListDataSource = getDefaultList(1, 20);
+
+function get{{name}}List(req: Request, res: Response, u: string) {
+  let realUrl = u;
+  if (!realUrl || Object.prototype.toString.call(realUrl) !== '[object String]') {
+    realUrl = req.url;
+  }
+  const { current = 1, pageSize = 10 } = req.body;
+  const params = req.body as unknown as {{name}}ListParams;
+
+  let dataSource = [...tableListDataSource].slice(
+    ((current as number) - 1) * (pageSize as number),
+    (current as number) * (pageSize as number),
+  );
+
+  if (params.name) {
+    dataSource = dataSource.filter((data) => data.name.includes(params.name || ''));
+  }
+
+  let finalPageSize = 10;
+  if (params.pageSize) {
+    finalPageSize = parseInt(`${params.pageSize}`, 10);
+  }
+
+  const result = {
+    code: 200,
+    data: dataSource,
+    totalCount: tableListDataSource.length,
+    success: true,
+    pageSize: finalPageSize,
+    current: parseInt(`${params.currentPage}`, 10) || 1,
+  };
+
+  return res.json(result);
+}
+
+function get{{name}}Item(req: Request, res: Response, u: string) {
+  let realUrl = u;
+  if (!realUrl || Object.prototype.toString.call(realUrl) !== '[object String]') {
+    realUrl = req.url;
+  }
+
+  const result = {
+    code: 200,
+    data: {
+      {{#columns}}
+      {{#ifEquals ../rowKey dataIndex}}
+      {{dataIndex}}: parseInt(req.params.id),
+      {{^}}
+      {{dataIndex}}: {{#ifEquals type 'string'}}`{{dataIndex}}-${req.params.id}`{{^}}1{{/ifEquals}},
+      {{/ifEquals}}
+      {{/columns}}
+    }
+  };
+
+  return res.json(result);
+}
+
+function add{{name}}(req: Request, res: Response, u: string, b: Request) {
+  let realUrl = u;
+  if (!realUrl || Object.prototype.toString.call(realUrl) !== '[object String]') {
+    realUrl = req.url;
+  }
+
+  const body = (b && b.body) || req.body;
+  const { {{#columns}}{{#ifEquals ../rowKey dataIndex}}{{^}}{{dataIndex}}, {{/ifEquals}}{{/columns}} } = body;
+
+  const newItem = {
+    {{#columns}}
+    {{#ifEquals ../rowKey dataIndex}}
+    {{dataIndex}}: tableListDataSource.length + 1,
+    {{^}}
+    {{dataIndex}},
+    {{/ifEquals}}
+    {{/columns}}
+  };
+
+  tableListDataSource.push(newItem);
+
+  return res.json({
+    code: 200
+  })
+}
+
+function update{{name}}(req: Request, res: Response, u: string, b: Request) {
+  let realUrl = u;
+  if (!realUrl || Object.prototype.toString.call(realUrl) !== '[object String]') {
+    realUrl = req.url;
+  }
+
+  const body = (b && b.body) || req.body;
+  const { name, sort, id } = body;
+
+  tableListDataSource = tableListDataSource.map((item) => {
+    if (item.id === id) {
+      return { ...item, name, sort };
+    }
+    return item;
+  });
+
+  return res.json({
+    code: 200
+  })
+}
+
+function delete{{name}}(req: Request, res: Response, u: string, b: Request) {
+  let realUrl = u;
+  if (!realUrl || Object.prototype.toString.call(realUrl) !== '[object String]') {
+    realUrl = req.url;
+  }
+
+  const body = (b && b.body) || req.body;
+  const { id } = body;
+
+  tableListDataSource = tableListDataSource.filter((item) => id !== item.id);
+
+  return res.json({
+    code: 200
+  })
+}
+
+export default {
+  'POST /api/{{apiName}}/page': get{{name}}List,
+  'GET /api/{{apiName}}/:id': get{{name}}Item,
+  'POST /api/{{apiName}}/add': add{{name}},
+  'DELETE /api/{{apiName}}/delete': delete{{name}},
+  'POST /api/{{apiName}}/updateById': update{{name}},
+};

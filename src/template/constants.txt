@@ -1,16 +1,26 @@
 export const STATUS_MAP = {
-  CREATED: 0
+  {{#tabs}}
+  {{key}}: {{value}},
+  {{/tabs}}
 };
 
 export const STATUS_TEXT_MAP: { [key: number | string]: string } = {
-  [STATUS_MAP.CREATED]: '正常'
+  {{#tabs}}
+  [STATUS_MAP.{{key}}]: '{{title}}',
+  {{/tabs}}
 };
 
 export const STATUS_TAB_LIST: Array<{ key: string | number, tab: string }> = [
-  { key: STATUS_MAP.CREATED, tab: STATUS_TEXT_MAP[STATUS_MAP.CREATED] }
+  {{#tabs}}
+  { key: STATUS_MAP.{{key}}, tab: STATUS_TEXT_MAP[STATUS_MAP.{{key}}] },
+  {{/tabs}}
 ];
 
+{{#if useTabsFull}}
 export const STATUS_FULL_TAB_LIST: Array<{ key: string | number, tab: string }> = [
-  { key: STATUS_MAP.CREATED, tab: STATUS_TEXT_MAP[STATUS_MAP.CREATED] },
+  {{#tabs}}
+  { key: STATUS_MAP.{{key}}, tab: STATUS_TEXT_MAP[STATUS_MAP.{{key}}] },
+  {{/tabs}}
   { key: 'all', tab: '全部' }
 ];
+{{/if}}
