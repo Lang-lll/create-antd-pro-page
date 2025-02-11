@@ -1,19 +1,13 @@
 {
-  "name": "Product",
-  "nameTitle": "商品",
-  "apiName": "productBean",
+  "name": "TemplateRelation",
+  "nameTitle": "模板属性关联",
+  "apiName": "relationItemTemplateBean",
   "customTableComponentPath": "@/components/antd/ProTable",
-  "useTabsFull": true,
-  "useDrawerForm": true,
   "columns": [
-    { "dataIndex": "spuName", "title": "名称", "type": "string" },
-    { "dataIndex": "spuDesc", "title": "描述", "type": "string" },
-    { "dataIndex": "categoryId", "title": "分类", "type": "number" },
+    { "dataIndex": "templateId", "title": "模板id", "type": "number" },
+    { "dataIndex": "itemId", "title": "属性id", "type": "number" },
+    { "dataIndex": "type", "title": "类型", "type": "number" },
+    { "dataIndex": "order", "title": "排序", "type": "number" },
     { "dataIndex": "status", "title": "状态", "type": "number" }
-  ],
-  "tabs": [
-    { "key": "DELETE", "value": -1, "title": "垃圾桶" },
-    { "key": "CREATED", "value": 0, "title": "下架" },
-    { "key": "PUBLISHED", "value": 1, "title": "上架" }
   ]
 }

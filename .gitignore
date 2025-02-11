@@ -9,6 +9,7 @@
 npm-debug.log*
 yarn-error.log
 
+pageTemplate.json
 /coverage
 .idea
 yarn.lock
