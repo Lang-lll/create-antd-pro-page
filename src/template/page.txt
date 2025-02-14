@@ -12,6 +12,9 @@ import { Button, Modal } from 'antd';
 import ProTable from '{{customTableComponentPath}}';
 {{/if}}
 import {{name}}{{> globalEditFormSuffix }} from './{{name}}{{> globalEditFormSuffix }}';
+{{#if tabs}}
+import {{name}}StatusModal from './{{name}}StatusModal'
+{{/if}}
 import React, { useRef, useState } from 'react';
 import { get{{name}}List, remove{{name}} } from './service';
 {{#if tabs}}
@@ -24,6 +27,7 @@ const {{name}}Page: React.FC = () => {
   const [editModalState, setEditModalState] = useState<{ open: boolean, data?: {{name}}ListItem }>({ open: false });
   {{#if tabs}}
   const [listParams, setListParams] = useState<{ status: number | undefined }>({ status: STATUS_MAP.{{tabs.[0].key}} });
+  const [selectedRows, setSelectedRows] = useState<{{name}}ListItem[]>([]);
   {{/if}}
   const actionRef = useRef<ActionType>();
 
@@ -40,6 +44,9 @@ const {{name}}Page: React.FC = () => {
       valueType: 'option',
       render: (_, record) => [
         <a key="edit" onClick={() => openEditModal(record)}>编辑</a>,
+        {{#if tabs}}
+        <a key="changeStatus" onClick={() => openStatusModal([record])}>修改状态</a>,
+        {{/if}}
         <a key="delete" onClick={confirmRemove(record)}>删除</a>
       ],
     },
@@ -58,6 +65,25 @@ const {{name}}Page: React.FC = () => {
     actionRef.current?.reload()
   }
 
+  {{#if tabs}}
+  function openStatusModal(dataList?: ProductListItem[]) {
+    setStatusModalState({ open: true, dataList })
+  }
+
+  function closeStatusModal() {
+    setStatusModalState({ ...statusModalState, open: false })
+  }
+
+  function afterStatusModalUpdate() {
+    setStatusModalState({ ...statusModalState, open: false })
+    actionRef.current?.reload()
+
+    if (actionRef.current?.clearSelected) {
+      actionRef.current.clearSelected()
+      setSelectedRows([])
+    }
+  }
+  {{/if}}
   function confirmRemove(row: {{name}}ListItem) {
     return () => {
       Modal.confirm({
@@ -106,10 +132,28 @@ const {{name}}Page: React.FC = () => {
           >
             <PlusOutlined /> 新建
           </Button>,
+          {{#if tabs}}
+          <Button
+            key="changeStatus"
+            type="primary"
+            ghost
+            disabled={!selectedRows.length}
+            onClick={() => openStatusModal(selectedRows)}
+          >
+            批量修改状态
+          </Button>
+          {{/tabs}}
         ]}
         options=\{{ fullScreen: false, reload: true, density: true, setting: false }}
         request={get{{name}}List}
         columns={columns}
+        {{#if tabs}}
+        rowSelection={{
+          onChange: (_, selectedRows) => {
+            setSelectedRows(selectedRows);
+          },
+        }}
+        {{/tabs}}
       />
 
       <{{name}}{{> globalEditFormSuffix }}
@@ -118,6 +162,15 @@ const {{name}}Page: React.FC = () => {
         onCancel={closeEditModalOpen}
         onUpdated={afterFormUpdate}
       />
+
+      {{#if tabs}}
+      <{{name}}StatusModal
+        open={statusModalState.open}
+        dataList={statusModalState.dataList}
+        onUpdated={afterStatusModalUpdate}
+        onCancel={closeStatusModal}
+      />
+      {{/tabs}}
     </PageContainer>
   );
 };

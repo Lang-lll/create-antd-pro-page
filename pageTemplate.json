@@ -1,11 +1,14 @@
 {
-  "name": "TemplateRelation",
-  "nameTitle": "模板属性关联",
-  "apiName": "relationItemTemplateBean",
+  "name": "ProductAttributeValue",
+  "nameTitle": "商品属性值",
+  "apiName": "templateItemValueInfoBean",
   "customTableComponentPath": "@/components/antd/ProTable",
   "columns": [
     { "dataIndex": "templateId", "title": "模板id", "type": "number" },
+    { "dataIndex": "recordId", "title": "skuId/spuId", "type": "number" },
     { "dataIndex": "itemId", "title": "属性id", "type": "number" },
+    { "dataIndex": "itemName", "title": "属性名", "type": "string" },
+    { "dataIndex": "itemValue", "title": "属性值", "type": "string" },
     { "dataIndex": "type", "title": "类型", "type": "number" },
     { "dataIndex": "order", "title": "排序", "type": "number" },
     { "dataIndex": "status", "title": "状态", "type": "number" }

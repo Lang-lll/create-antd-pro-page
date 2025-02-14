@@ -1,0 +1,61 @@
+import { useState, useEffect, useRef } from 'react'
+import {
+  ModalForm,
+  ProFormRadio
+} from '@ant-design/pro-components';
+import { message } from 'antd'
+import { change{{name}}StatusSigle } from './service';
+import type { ProFormInstance } from '@ant-design/pro-components'
+import { STATUS_TEXT_MAP, STATUS_VALUE_LIST } from './constants'
+import type { {{name}}ListItem } from './data'
+
+export default function {{name}}StatusModal(props: { open?: boolean, dataList?: {{name}}ListItem[], onCancel?: () => void, onUpdated?: () => void }) {
+  const { open, dataList, onCancel, onUpdated } = props
+  const [statusText, setStatusText] = useState('')
+  const formRef = useRef<ProFormInstance>()
+
+  useEffect(() => {
+    if (open) {
+      if (Array.isArray(dataList) && dataList[0]) {
+        setStatusText(STATUS_TEXT_MAP[dataList[0].status] || '')
+
+        formRef.current?.setFieldsValue({
+          status: dataList[0].status
+        })
+      }
+    }
+  }, [open])
+
+  return (
+    <ModalForm
+      formRef={formRef}
+      title="修改状态"
+      width="400px"
+      open={open}
+      modalProps={{ onCancel }}
+      onFinish={async (vals) => {
+        if (Array.isArray(dataList)) {
+          for (let i = 0; i < dataList.length; i++) {
+            await change{{name}}StatusSigle({ id: dataList[i].id, status: vals.status })
+          }
+
+          typeof onUpdated === 'function' && onUpdated();
+          message.success('操作完成')
+        } else {
+          message.error('没有选择列表项')
+        }
+      }}
+    >
+      <div style={{ margin: '20px 0' }}>原状态: {statusText}</div>
+
+      <ProFormRadio.Group
+        rules={[{ required: true }]}
+        name="status"
+        label="新状态"
+        fieldProps={{
+          options: STATUS_VALUE_LIST
+        }}
+      />
+    </ModalForm>
+  )
+}

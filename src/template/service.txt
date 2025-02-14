@@ -66,3 +66,15 @@ export async function remove{{name}}(row: {{name}}ListItem, options?: { [key: st
     ...(options || {}),
   });
 }
+
+/** 修改状态 */
+export async function change{{name}}StatusSigle(data: { [key: string]: any }, options?: { [key: string]: any }) {
+  return request<any>(`/{{apiName}}/changeStatus`, {
+    data: {
+      id: data.id,
+      status: data.status
+    },
+    method: 'POST',
+    ...(options || {}),
+  });
+}

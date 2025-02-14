@@ -38,6 +38,10 @@ function get{{name}}List(req: Request, res: Response, u: string) {
     dataSource = dataSource.filter((data) => data.name.includes(params.name || ''));
   }
 
+  if (params.status || params.status === 0) {
+    dataSource = dataSource.filter((data) => data.status === params.status);
+  }
+
   let finalPageSize = 10;
   if (params.pageSize) {
     finalPageSize = parseInt(`${params.pageSize}`, 10);
@@ -140,10 +144,32 @@ function delete{{name}}(req: Request, res: Response, u: string, b: Request) {
   })
 }
 
+function change{{name}}Status(req: Request, res: Response, u: string, b: Request) {
+  let realUrl = u;
+  if (!realUrl || Object.prototype.toString.call(realUrl) !== '[object String]') {
+    realUrl = req.url;
+  }
+
+  const body = (b && b.body) || req.body;
+  const { status, id } = body;
+
+  tableListDataSource = tableListDataSource.map((item) => {
+    if (item.id === id) {
+      return { ...item, status };
+    }
+    return item;
+  });
+
+  return res.json({
+    code: 200
+  })
+}
+
 export default {
   'POST /api/{{apiName}}/page': get{{name}}List,
   'GET /api/{{apiName}}/:id': get{{name}}Item,
   'POST /api/{{apiName}}/add': add{{name}},
   'DELETE /api/{{apiName}}/delete': delete{{name}},
   'POST /api/{{apiName}}/updateById': update{{name}},
+  'POST /api/{{apiName}}/changeStatus': change{{name}}Status,
 };

@@ -50,6 +50,11 @@ if (config.tabs) {
   const constantsTemplate = Handlebars.compile(constantsText);
   console.log('生成常量文件...');
   fs.writeFileSync(path.join(distPath, pageName, 'constants.ts'), constantsTemplate(config));
+
+  const statusModalText = fs.readFileSync(path.join(__dirname, './template/statusModal.txt'), { encoding: 'utf8' });
+  const statusModalTemplate = Handlebars.compile(statusModalText);
+  console.log('生成状态修改弹框...');
+  fs.writeFileSync(path.join(distPath, pageName, `${config.name}StatusModal.tsx`), statusModalTemplate(config));
 }
 
 console.log('生成接口文件...');

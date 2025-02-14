@@ -11,7 +11,7 @@ export type {{name}}ListPagination = {
 };
 
 export type {{name}}ListParams = {
-  status?: string;
+  status?: number;
   key?: number;
   pageSize?: number;
   currentPage?: number;
