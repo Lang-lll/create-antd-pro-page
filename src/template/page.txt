@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import {
@@ -6,6 +7,7 @@ import {
   {{^}}
   ProTable,
   {{/if}}
+  type FormInstance
 } from '@ant-design/pro-components';
 import { Button, Modal } from 'antd';
 {{#if customTableComponentPath}}
@@ -15,23 +17,25 @@ import {{name}}{{> globalEditFormSuffix }} from './{{name}}{{> globalEditFormSuf
 {{#if tabs}}
 import {{name}}StatusModal from './{{name}}StatusModal'
 {{/if}}
-import React, { useRef, useState } from 'react';
 import { get{{name}}List, remove{{name}} } from './service';
+import { columnsAutoTriggerSearch } from '@/utils/pro'
+import { DEFAULT_SEARCH_SPAN, DEFAULT_PAGE_SIZE } from '@/globalConstants'
 {{#if tabs}}
 import { STATUS_MAP, STATUS_TAB_LIST } from './constants';
 {{/if}}
 import type { {{name}}ListItem, {{name}}ListPagination } from './data';
 
 const {{name}}Page: React.FC = () => {
-  /** 新建窗口的弹窗 */
+  /** 新建/编辑窗口的弹窗 */
   const [editModalState, setEditModalState] = useState<{ open: boolean, data?: {{name}}ListItem }>({ open: false });
   {{#if tabs}}
   const [listParams, setListParams] = useState<{ status: number | undefined }>({ status: STATUS_MAP.{{tabs.[0].key}} });
   const [selectedRows, setSelectedRows] = useState<{{name}}ListItem[]>([]);
   {{/if}}
   const actionRef = useRef<ActionType>();
+  const formRef = useRef<FormInstance>();
 
-  const columns: ProColumns<{{name}}ListItem>[] = [
+  const columns: ProColumns<{{name}}ListItem>[] = columnsAutoTriggerSearch<{{name}}ListItem>([
     {{#columns}}
     {
       title: '{{title}}',
@@ -50,7 +54,7 @@ const {{name}}Page: React.FC = () => {
         <a key="delete" onClick={confirmRemove(record)}>删除</a>
       ],
     },
-  ];
+  ], formRef);
 
   function openEditModal(data?: {{name}}ListItem) {
     setEditModalState({ open: true, data })
@@ -118,6 +122,7 @@ const {{name}}Page: React.FC = () => {
     >
       <ProTable<{{name}}ListItem, {{name}}ListPagination>
         actionRef={actionRef}
+        formRef={formRef}
         {{#if tabs}}
         params={listParams as any}
         {{/if}}
@@ -142,18 +147,20 @@ const {{name}}Page: React.FC = () => {
           >
             批量修改状态
           </Button>
-          {{/tabs}}
+          {{/if}}
         ]}
         options=\{{ fullScreen: false, reload: true, density: true, setting: false }}
         request={get{{name}}List}
         columns={columns}
         {{#if tabs}}
-        rowSelection={{
+        rowSelection=\{{
           onChange: (_, selectedRows) => {
             setSelectedRows(selectedRows);
           },
         }}
-        {{/tabs}}
+        {{/if}}
+        search=\{{ span: DEFAULT_SEARCH_SPAN }}
+        pagination=\{{ defaultPageSize: DEFAULT_PAGE_SIZE, showSizeChanger: true }}
       />
 
       <{{name}}{{> globalEditFormSuffix }}
@@ -170,7 +177,7 @@ const {{name}}Page: React.FC = () => {
         onUpdated={afterStatusModalUpdate}
         onCancel={closeStatusModal}
       />
-      {{/tabs}}
+      {{/if}}
     </PageContainer>
   );
 };

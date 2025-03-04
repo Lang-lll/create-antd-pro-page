@@ -19,7 +19,7 @@ const distPath = path.join(process.cwd(), DIST_DIR);
 
 createFolder(distPath);
 
-const configText = fs.readFileSync('pageTemplate.json', { encoding: 'utf8' });
+const configText = fs.readFileSync('page.template.json', { encoding: 'utf8' });
 const config = JSON.parse(configText);
 const pageName = `${config.name}Page`;
 const typeText = fs.readFileSync(path.join(__dirname, './template/type.txt'), { encoding: 'utf8' });
