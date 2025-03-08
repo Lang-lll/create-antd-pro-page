@@ -46,13 +46,13 @@ export default function {{name}}StatusModal(props: { open?: boolean, dataList?: 
         }
       }}
     >
-      <div style={{ margin: '20px 0' }}>原状态: {statusText}</div>
+      <div style=\{{ margin: '20px 0' }}>原状态: {statusText}</div>
 
       <ProFormRadio.Group
         rules={[{ required: true }]}
         name="status"
         label="新状态"
-        fieldProps={{
+        fieldProps=\{{
           options: STATUS_VALUE_LIST
         }}
       />

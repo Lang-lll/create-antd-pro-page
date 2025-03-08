@@ -12,7 +12,7 @@ export const STATUS_TEXT_MAP: { [key: number | string]: string } = {
 
 export const STATUS_VALUE_LIST: Array<{ value: string | number, label: string }> = [
   {{#tabs}}
-  { value: STATUS_MAP.{{key}}, label: STATUS_TEXT_MAP[STATUS_MAP.{{title}}] },
+  { value: STATUS_MAP.{{key}}, label: STATUS_TEXT_MAP[STATUS_MAP.{{key}}] },
   {{/tabs}}
 ];
 
