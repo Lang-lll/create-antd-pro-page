@@ -1,0 +1,19 @@
+{
+  "name": "SystemLog",
+  "nameTitle": "系统日志",
+  "apiName": "sysLogBean",
+  "customTableComponentPath": "@/components/antd/ProTable",
+  "useTabsFull": true,
+  "columns": [
+    { "dataIndex": "method", "title": "请求方法", "type": "string" },
+    { "dataIndex": "params", "title": "请求参数", "type": "string" },
+    { "dataIndex": "operation", "title": "用户操作", "type": "string" },
+    { "dataIndex": "username", "title": "用户名", "type": "string" },
+    { "dataIndex": "ip", "title": "IP地址", "type": "string" },
+    { "dataIndex": "time", "title": "请求时间", "type": "number" }
+  ],
+  "tabs": [
+    { "key": "DELETED", "title": "删除", "value": 0 },
+    { "key": "NORMAL", "title": "正常", "value": 1 }
+  ]
+}
